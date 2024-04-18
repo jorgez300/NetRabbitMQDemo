@@ -55,7 +55,7 @@ namespace RabbitMQLibrary
 
         }
 
-        public void Receive()
+        public void Receive(Action<string> action)
         {
             _channel?.BasicQos(0, 1, false);
             _consumer = new EventingBasicConsumer(_channel);
@@ -66,7 +66,7 @@ namespace RabbitMQLibrary
 
                 string message = Encoding.UTF8.GetString(body);
 
-                Console.WriteLine("Recibido: " + message);
+                action(message);
 
                 _channel?.BasicAck(args.DeliveryTag, false);
             };
@@ -77,7 +77,6 @@ namespace RabbitMQLibrary
 
             _channel.BasicCancel(consumerTag);
 
-            Dispose();
 
         }
 
