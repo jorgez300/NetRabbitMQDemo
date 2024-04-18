@@ -11,8 +11,8 @@ Console.ReadLine();
 
 
 void action(string message) {
-
-    Console.WriteLine("Recibido: " + message);
+    Task.Delay(TimeSpan.FromSeconds(4)).Wait();
+    Console.WriteLine("Receiver 1: " + message);
 
 }
 

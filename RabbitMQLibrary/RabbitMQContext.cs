@@ -1,6 +1,7 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Threading.Channels;
 
 namespace RabbitMQLibrary
 {
@@ -52,7 +53,17 @@ namespace RabbitMQLibrary
         public void Send(byte[] body)
         {
             _channel.BasicPublish(_exchangeName, _routingKey, null, body);
+        }
 
+        public void SendMany(IEnumerable<byte[]> Bodies)
+        {
+            IBasicPublishBatch basicPublishBatch = _channel?.CreateBasicPublishBatch();
+            foreach (byte[] item in Bodies)
+            {
+                basicPublishBatch.Add(_exchangeName, _routingKey, false, null, item);
+            }
+
+            basicPublishBatch.Publish();
         }
 
         public void Receive(Action<string> action)
@@ -61,7 +72,7 @@ namespace RabbitMQLibrary
             _consumer = new EventingBasicConsumer(_channel);
             _consumer.Received += (sender, args) =>
             {
-                Task.Delay(TimeSpan.FromSeconds(2)).Wait();
+
                 byte[] body = args.Body.ToArray();
 
                 string message = Encoding.UTF8.GetString(body);

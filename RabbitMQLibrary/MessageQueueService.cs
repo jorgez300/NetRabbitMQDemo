@@ -15,16 +15,19 @@ namespace RabbitMQLibrary
             {
                 _context.Send(body);
             }
+        }
 
-
+        public void SendMany(IEnumerable<byte[]> Bodies)
+        {
+            using (RabbitMQContext _context = new("Sender"))
+            {
+                _context.SendMany(Bodies);
+            }
         }
 
         public void Receive(Action<string> action)
         {
-            //RabbitMQContext _context = new("Receiver");
-            //_context.Receive();
-
-            using (RabbitMQContext _context = new("receiver"))
+            using (RabbitMQContext _context = new("Receiver"))
             {
                 _context.Receive(action);
             }
